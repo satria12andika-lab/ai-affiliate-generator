@@ -3,11 +3,15 @@ package com.stradk.aiaffiliate
 
 import android.app.Activity
 import android.os.Bundle
+import android.view.ViewGroup
 import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 
 class MainActivity : Activity() {
@@ -20,6 +24,11 @@ class MainActivity : Activity() {
         try {
             webView = WebView(this)
 
+            webView.layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+
             webView.settings.apply {
                 javaScriptEnabled = true
                 domStorageEnabled = true
@@ -28,20 +37,44 @@ class MainActivity : Activity() {
                 mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             }
 
-            webView.webViewClient = WebViewClient()
-
             webView.webChromeClient = WebChromeClient()
 
-            setContentView(webView)
+            webView.webViewClient = object : WebViewClient() {
+                override fun onReceivedError(
+                    view: WebView,
+                    request: WebResourceRequest,
+                    error: WebResourceError
+                ) {
+                    if (request.isForMainFrame) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Gagal memuat halaman: ${error.description}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
 
+                override fun onPageFinished(view: WebView, url: String) {
+                    super.onPageFinished(view, url)
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Halaman berhasil dimuat",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            setContentView(webView)
             webView.loadUrl("file:///android_asset/index.html")
 
         } catch (e: Exception) {
-            Toast.makeText(
-                this,
-                "Error: ${e.message}",
-                Toast.LENGTH_LONG
-            ).show()
+            val message = TextView(this)
+            message.text = "Terjadi kesalahan:\n${e.message}"
+            message.textSize = 18f
+
+            val layout = LinearLayout(this)
+            layout.addView(message)
+            setContentView(layout)
         }
     }
 
@@ -56,6 +89,7 @@ class MainActivity : Activity() {
 
     override fun onDestroy() {
         if (::webView.isInitialized) {
+            webView.stopLoading()
             webView.destroy()
         }
         super.onDestroy()
