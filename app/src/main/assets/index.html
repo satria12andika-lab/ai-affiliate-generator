@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Affiliate Generator</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d18;color:#fff;font-family:Arial,sans-serif;padding:18px}
+.container{max-width:650px;margin:auto}
+.header{text-align:center;padding:22px 10px}
+.logo{font-size:38px}
+h1{font-size:26px;margin:10px 0;color:#48d9ff}
+.header p{color:#aab6ca;font-size:13px}
+.card{background:#111c30;border:1px solid #263955;border-radius:16px;padding:18px;margin-bottom:16px}
+h2{font-size:17px;margin:0 0 16px;color:#48d9ff}
+label{display:block;font-size:13px;margin:13px 0 7px;color:#d8e5f5}
+input,textarea,select{width:100%;padding:13px;background:#081322;border:1px solid #30445f;border-radius:9px;color:white;font-size:14px;outline:none}
+textarea{min-height:85px;resize:vertical}
+button{width:100%;padding:15px;border:0;border-radius:10px;font-weight:bold;font-size:15px;cursor:pointer;margin-top:12px}
+.generate{background:linear-gradient(90deg,#00c6ff,#0072ff);color:white}
+.copy{background:#16b879;color:white}
+.clear{background:#263955;color:white}
+.result{white-space:pre-wrap;background:#081322;border:1px solid #30445f;border-radius:10px;padding:15px;min-height:100px;font-size:13px;line-height:1.7;color:#e5efff;overflow-wrap:anywhere}
+.footer{text-align:center;color:#75859d;font-size:11px;padding:20px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+<div class="logo">🚀</div>
+<h1>AI AFFILIATE GENERATOR</h1>
+<p>Generator prompt iklan produk profesional dengan AI</p>
+</div>
+
+<div class="card">
+<h2>📦 INFORMASI PRODUK</h2>
+
+<label>Nama Produk</label>
+<input id="product" placeholder="Contoh: Kaos Oversize Pria">
+
+<label>Kategori Produk</label>
+<select id="category">
+<option>Fashion</option>
+<option>Kecantikan</option>
+<option>Elektronik</option>
+<option>Makanan dan Minuman</option>
+<option>Peralatan Rumah</option>
+<option>Lainnya</option>
+</select>
+
+<label>Harga Produk</label>
+<input id="price" placeholder="Contoh: Rp59.000">
+
+<label>Keunggulan Produk</label>
+<textarea id="benefit" placeholder="Tuliskan keunggulan produk..."></textarea>
+
+<label>Target Pembeli</label>
+<input id="target" placeholder="Contoh: Pria usia 18-35 tahun">
+
+<label>Durasi Video</label>
+<select id="duration">
+<option>10 detik</option>
+<option>15 detik</option>
+<option>20 detik</option>
+<option>30 detik</option>
+</select>
+
+<label>Gaya Video</label>
+<select id="style">
+<option>Cinematic realistis premium</option>
+<option>UGC natural seperti kreator TikTok</option>
+<option>Luxury commercial</option>
+<option>Review produk profesional</option>
+<option>Minimalis elegan</option>
+</select>
+</div>
+
+<div class="card">
+<h2>🎬 GENERATOR PROMPT</h2>
+<button class="generate" onclick="generatePrompt()">✨ BUAT PROMPT SEKARANG</button>
+</div>
+
+<div class="card">
+<h2>📋 HASIL PROMPT AI</h2>
+<div class="result" id="result">Hasil prompt akan muncul di sini setelah kamu menekan tombol BUAT PROMPT.</div>
+<button class="copy" onclick="copyPrompt()">📋 SALIN PROMPT</button>
+<button class="clear" onclick="clearForm()">BERSIHKAN FORM</button>
+</div>
+
+<div class="footer">
+AI AFFILIATE GENERATOR<br>
+Created by Satria Andika
+</div>
+
+</div>
+
+<script>
+function generatePrompt(){
+const product=document.getElementById("product").value.trim();
+const category=document.getElementById("category").value;
+const price=document.getElementById("price").value.trim();
+const benefit=document.getElementById("benefit").value.trim();
+const target=document.getElementById("target").value.trim();
+const duration=document.getElementById("duration").value;
+const style=document.getElementById("style").value;
+
+if(!product){
+alert("Masukkan nama produk terlebih dahulu!");
+return;
+}
+
+const prompt=`BUAT VIDEO IKLAN AFFILIATE PROFESIONAL
+
+PRODUK: ${product}
+KATEGORI: ${category}
+HARGA: ${price || "Tidak dicantumkan"}
+KEUNGGULAN: ${benefit || "Tampilkan detail produk secara menarik"}
+TARGET PEMBELI: ${target || "Konsumen umum"}
+DURASI: ${duration}
+
+KONSEP VISUAL:
+Video vertikal 9:16 untuk TikTok, Instagram Reels dan YouTube Shorts.
+Gaya visual ${style}, realistis, cinematic, detail tajam, kualitas 4K.
+Gunakan pencahayaan profesional, gerakan kamera halus, close-up produk dan transisi natural.
+
+URUTAN ADEGAN:
+1. HOOK: Tampilkan produk secara menarik pada detik pertama untuk menarik perhatian penonton.
+2. DETAIL: Perlihatkan bentuk, bahan, tekstur, warna dan detail produk dari beberapa sudut.
+3. KEUNGGULAN: Tampilkan manfaat produk berikut: ${benefit || "Jelaskan keunggulan produk secara visual"}.
+4. HARGA: Tampilkan informasi harga ${price || "sesuai informasi penjual"} dengan jelas dan menarik.
+5. CTA: Akhiri dengan ajakan membeli: "Cek keranjang kuning di pojok kiri bawah!"
+
+ARAHAN TAMBAHAN:
+- Pertahankan bentuk dan warna produk sesuai referensi asli.
+- Jangan mengubah logo atau desain produk.
+- Jangan membuat klaim manfaat yang tidak diberikan.
+- Hindari teks acak dan watermark.
+- Gunakan transisi halus dan visual profesional.
+- Fokus utama selalu pada produk.
+- Buat hasil akhir menarik dan cocok untuk pemasaran affiliate.
+
+HASIL AKHIR:
+Video iklan affiliate ${duration}, format vertikal 9:16, siap digunakan untuk TikTok, Reels dan Shorts.`;
+
+document.getElementById("result").textContent=prompt;
+}
+
+function copyPrompt(){
+const text=document.getElementById("result").textContent;
+if(!text || text.startsWith("Hasil prompt")){
+alert("Buat prompt terlebih dahulu!");
+return;
+}
+if(navigator.clipboard && window.isSecureContext){
+navigator.clipboard.writeText(text).then(()=>alert("Prompt berhasil disalin!")).catch(()=>fallbackCopy(text));
+}else{
+fallbackCopy(text);
+}
+}
+
+function fallbackCopy(text){
+const area=document.createElement("textarea");
+area.value=text;
+document.body.appendChild(area);
+area.select();
+try{
+document.execCommand("copy");
+alert("Prompt berhasil disalin!");
+}catch(e){
+alert("Gagal menyalin. Silakan salin manual.");
+}
+area.remove();
+}
+
+function clearForm(){
+["product","price","benefit","target"].forEach(id=>document.getElementById(id).value="");
+document.getElementById("result").textContent="Hasil prompt akan muncul di sini setelah kamu menekan tombol BUAT PROMPT.";
+}
+</script>
+</body>
+</html>
