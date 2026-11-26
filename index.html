@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0712">
+<title>AI Affiliate Generator</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:system-ui,-apple-system,Roboto,sans-serif;background:#08050d;background-image:radial-gradient(circle at 80% 0,#3b1470 0,transparent 45%);color:#f4effc;min-height:100vh;line-height:1.5}
+.wrap{max-width:560px;margin:0 auto;padding:16px 14px 40px}
+header{text-align:center;padding:14px 0 18px}
+.logo{width:56px;height:56px;margin:0 auto 10px;border-radius:18px;background:linear-gradient(135deg,#a855f7,#5b21b6);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 30px rgba(147,51,234,.5)}
+h1{font-size:23px;background:linear-gradient(90deg,#fff,#c084fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{color:#a89bbd;font-size:13px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#140e1f;padding:5px;border-radius:14px;position:sticky;top:8px;z-index:5;border:1px solid #2a1d40}
+button{font:inherit;cursor:pointer;border:0;color:#fff;border-radius:11px}
+button:active{transform:scale(.97)}
+.tab{background:transparent;padding:10px;font-weight:600;color:#a89bbd}
+.tab.on{background:linear-gradient(135deg,#9333ea,#6d28d9);color:#fff}
+.card{background:rgba(22,15,34,.95);border:1px solid #2e2046;border-radius:18px;padding:16px;margin-top:14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+label.t{display:block;font-size:13px;font-weight:600;color:#d8c7f5;margin:14px 0 6px}
+label.t:first-child{margin-top:0}
+input[type=text],textarea,select{width:100%;background:#0d0915;color:#fff;border:1px solid #35254f;border-radius:12px;padding:13px;font:inherit;font-size:16px;outline:0}
+input:focus,textarea:focus,select:focus{border-color:#a855f7;box-shadow:0 0 0 3px rgba(168,85,247,.2)}
+textarea{min-height:100px;resize:vertical}
+.row{display:grid;grid-template-columns:2fr 1fr;gap:10px}
+.hint{font-size:12px;color:#8f82a5;margin-top:5px}
+#priceInfo{color:#c084fc;font-weight:600}
+.upload{display:block;border:2px dashed #4c2d7a;border-radius:14px;padding:18px;text-align:center;color:#c4a8f0;cursor:pointer;position:relative}
+.upload input{position:absolute;opacity:0;width:1px;height:1px}
+#preview{display:none;width:100%;max-height:280px;object-fit:contain;border-radius:12px;margin-top:10px;background:#000}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.chips.two{grid-template-columns:1fr 1fr}
+.chips label{position:relative}
+.chips input{position:absolute;opacity:0}
+.chips span{display:block;text-align:center;padding:11px 4px;border-radius:11px;border:1px solid #35254f;background:#0d0915;font-size:14px;cursor:pointer}
+.chips input:checked+span{background:linear-gradient(135deg,#9333ea,#6d28d9);border-color:#c084fc;font-weight:700}
+.main{width:100%;margin-top:20px;padding:16px;font-weight:800;letter-spacing:1px;background:linear-gradient(135deg,#a855f7,#6d28d9);box-shadow:0 8px 26px rgba(147,51,234,.45)}
+.sec{background:#231736;border:1px solid #432c68;padding:10px 14px;font-size:13px;font-weight:600}
+.full{width:100%;margin-top:10px}
+.danger{background:#3a1120;border:1px solid #7f2442}
+#error{color:#ff8aa5;font-size:13px;margin-top:12px;text-align:center}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.head h3{font-size:15px;color:#c084fc}
+pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;font-size:14px;color:#e9e1f7;user-select:text;-webkit-user-select:text}
+.item{display:flex;gap:12px;align-items:center}
+.thumb{width:58px;height:58px;border-radius:11px;object-fit:cover;background:#2a1b43;display:flex;align-items:center;justify-content:center;flex:none;font-size:24px}
+.item b{display:block;word-break:break-word}
+.item small{color:#9a8cb0}
+.item>div:last-child{min-width:0}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.empty{text-align:center;color:#8f82a5;padding:30px 10px}
+.hide{display:none!important}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#7e22ce;padding:11px 18px;border-radius:30px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;width:max-content;max-width:90%;text-align:center;z-index:20}
+#toast.show{opacity:1}
+#modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}
+#modal .card{width:100%;max-width:340px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">✨</div>
+    <h1>AI Affiliate Generator</h1>
+    <p>Buat naskah dan prompt video jualan secara offline</p>
+  </header>
+
+  <nav class="tabs">
+    <button type="button" class="tab on" id="tabCreate">Buat Prompt</button>
+    <button type="button" class="tab" id="tabHistory">Riwayat</button>
+  </nav>
+
+  <main id="pageCreate">
+    <form id="form" class="card" novalidate>
+      <label class="t" for="name">Nama Produk</label>
+      <input type="text" id="name" maxlength="80" placeholder="Contoh: Botol Minum 1 Liter">
+
+      <label class="t">Foto Produk (opsional)</label>
+      <label class="upload">📷 Ketuk untuk memilih foto
+        <input type="file" id="photo" accept="image/*">
+      </label>
+      <img id="preview" alt="Pratinjau foto produk">
+      <button type="button" class="sec full danger hide" id="removePhoto">Hapus Foto</button>
+
+      <div class="row">
+        <div>
+          <label class="t" for="price">Harga Normal (Rp)</label>
+          <input type="text" id="price" inputmode="numeric" maxlength="15" placeholder="100.000">
+        </div>
+        <div>
+          <label class="t" for="discount">Diskon (%)</label>
+          <input type="text" id="discount" inputmode="numeric" maxlength="2" placeholder="0">
+        </div>
+      </div>
+      <div class="hint" id="priceInfo"></div>
+
+      <label class="t" for="benefits">Manfaat Produk</label>
+      <textarea id="benefits" maxlength="600" placeholder="Satu manfaat per baris, contoh:&#10;Muat banyak air&#10;Mudah dibawa"></textarea>
+      <div class="hint">Tulis singkat dan sesuai fakta produk.</div>
+
+      <label class="t" for="target">Target Pembeli</label>
+      <select id="target"></select>
+
+      <label class="t">Durasi Video</label>
+      <div class="chips">
+        <label><input type="radio" name="duration" value="10"><span>10 dtk</span></label>
+        <label><input type="radio" name="duration" value="15" checked><span>15 dtk</span></label>
+        <label><input type="radio" name="duration" value="20"><span>20 dtk</span></label>
+        <label><input type="radio" name="duration" value="30"><span>30 dtk</span></label>
+      </div>
+
+      <label class="t">Gaya Video</label>
+      <div class="chips two">
+        <label><input type="radio" name="style" value="cinematic" checked><span>🎬 Cinematic</span></label>
+        <label><input type="radio" name="style" value="realistis"><span>📸 Realistis</span></label>
+        <label><input type="radio" name="style" value="ugc"><span>🤳 UGC</span></label>
+        <label><input type="radio" name="style" value="storytelling"><span>📖 Storytelling</span></label>
+      </div>
+
+      <div id="error" role="alert"></div>
+      <button type="submit" class="main">GENERATE PROMPT</button>
+      <button type="button" class="sec full" id="reset">Kosongkan Form</button>
+    </form>
+
+    <section id="results"></section>
+  </main>
+
+  <main id="pageHistory" class="hide">
+    <div id="historyList"></div>
+    <button type="button" class="sec full danger hide" id="clearAll">Hapus Semua Riwayat</button>
+  </main>
+</div>
+
+<div id="modal" class="hide">
+  <div class="card">
+    <p id="modalText"></p>
+    <div class="acts">
+      <button type="button" class="sec" id="modalNo">Batal</button>
+      <button type="button" class="sec danger" id="modalYes">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+(function(){
+"use strict";
+var KEY = "aiAffiliateHistory";
+var MAX_HISTORY = 30;
+var photoData = "";
+var photoJob = 0;
+
+var TARGETS = {
+  umum:{label:"Umum",sapaan:"Teman-teman",model:"orang dewasa Indonesia",place:"ruangan rumah yang rapi",tag:"#BelanjaOnline"},
+  wanita:{label:"Wanita muda",sapaan:"Girls",model:"wanita Indonesia usia 20-an",place:"kamar estetik dengan cahaya jendela",tag:"#RacunCewek"},
+  ibu:{label:"Ibu rumah tangga",sapaan:"Bunda",model:"ibu Indonesia usia 30-an",place:"rumah yang hangat dan bersih",tag:"#BundaWajibTahu"},
+  pelajar:{label:"Mahasiswa / pelajar",sapaan:"Guys",model:"mahasiswa Indonesia",place:"meja belajar yang rapi",tag:"#AnakKampus"},
+  pekerja:{label:"Pekerja kantoran",sapaan:"Rekan kerja",model:"pekerja kantoran Indonesia",place:"meja kerja modern",tag:"#AnakKantor"},
+  pria:{label:"Pria dewasa",sapaan:"Bro",model:"pria Indonesia usia 20-35 tahun",place:"ruangan minimalis modern",tag:"#GayaPria"},
+  olahraga:{label:"Pecinta olahraga",sapaan:"Sobat aktif",model:"orang Indonesia berpakaian olahraga",place:"taman atau area olahraga",tag:"#HidupAktif"},
+  umkm:{label:"Pelaku UMKM",sapaan:"Kak",model:"pemilik usaha kecil Indonesia",place:"tempat usaha yang tertata",tag:"#UMKMIndonesia"}
+};
+
+var STYLES = {
+  cinematic:{label:"Cinematic",tag:"#VideoCinematic",
+    look:"sinematik premium, pencahayaan dramatis dengan aksen ungu lembut, latar gelap elegan, depth of field dangkal, color grading film",
+    camera:"slow push-in, orbit halus, macro close-up, gerakan stabil",
+    audio:"musik instrumental modern yang megah, suara narator tenang dan percaya diri",
+    hooks:["Satu detail kecil bisa bikin beda. Ini {n}.","Saatnya lihat {n} lebih dekat.","{t}, kenalan dengan {n}."]},
+  realistis:{label:"Realistis",tag:"#ReviewProduk",
+    look:"foto-realistis, warna natural, tekstur asli, pencahayaan siang hari, tanpa efek berlebihan",
+    camera:"eye-level, close-up tajam, gerakan genggam yang halus",
+    audio:"suara narator jelas dan natural, musik latar ringan",
+    hooks:["{t}, lagi cari {n}? Lihat ini dulu.","Sebelum beli {n}, cek ini dulu.","Ini dia {n} dilihat dari dekat."]},
+  ugc:{label:"UGC",tag:"#UGCIndonesia",
+    look:"gaya konten kreator, direkam dengan kamera HP, natural, spontan, cahaya jendela",
+    camera:"selfie handheld, lalu close-up tangan memegang produk",
+    audio:"suara kreator santai dan antusias, suara ruangan natural, musik ceria pelan",
+    hooks:["{t}, sini aku tunjukin {n}!","Stop scroll dulu, {t}! Ada {n} nih.","{t}, udah lihat {n} ini belum?"]},
+  storytelling:{label:"Storytelling",tag:"#CeritaProduk",
+    look:"bercerita dengan alur awal, kebutuhan, solusi, dan ajakan; suasana hangat dan emosional",
+    camera:"wide shot pembuka, medium shot ekspresi, close-up produk, transisi mulus",
+    audio:"suara narator hangat, musik yang berkembang mengikuti cerita",
+    hooks:["Semua berawal dari satu kebutuhan sederhana.","Pernah merasa butuh sesuatu yang pas, {t}?","Hari itu, ada satu barang yang menarik perhatian: {n}."]}
+};
+
+// [jenis adegan, lama dalam detik]
+var PLANS = {
+  10:[["hook",3],["benefit",4],["cta",3]],
+  15:[["hook",3],["demo",4],["benefit",4],["cta",4]],
+  20:[["hook",3],["problem",4],["demo",5],["benefit",4],["cta",4]],
+  30:[["hook",3],["problem",5],["intro",5],["demo",7],["benefit",5],["cta",5]]
+};
+
+function $(id){return document.getElementById(id);}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function digits(s){return String(s).replace(/\D/g,"");}
+function rupiah(n){return "Rp"+String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,".");}
+function sentence(s){s=s.trim().replace(/[.!?,;]+$/,"");return s.charAt(0).toUpperCase()+s.slice(1)+".";}
+function checked(n){return document.querySelector('input[name="'+n+'"]:checked').value;}
+function setChecked(n,v){var el=document.querySelector('input[name="'+n+'"][value="'+v+'"]');if(el)el.checked=true;}
+
+var toastTimer;
+function toast(msg){
+  var t=$("toast");t.textContent=msg;t.className="show";
+  clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.className="";},2500);
+}
+
+var modalAction=null;
+function ask(text,action){$("modalText").textContent=text;modalAction=action;$("modal").classList.remove("hide");}
+$("modalNo").onclick=function(){$("modal").classList.add("hide");};
+$("modalYes").onclick=function(){$("modal").classList.add("hide");if(modalAction)modalAction();};
+
+Object.keys(TARGETS).forEach(function(k){
+  var o=document.createElement("option");o.value=k;o.textContent=TARGETS[k].label;$("target").appendChild(o);
+});
+
+function updatePrice(){
+  var p=Number(digits($("price").value)),d=Number(digits($("discount").value));
+  $("priceInfo").textContent=p?"Harga akhir: "+rupiah(p*(100-d)/100):"";
+}
+$("price").oninput=function(){
+  var v=digits(this.value);this.value=v?rupiah(Number(v)).slice(2):"";updatePrice();
+};
+$("discount").oninput=function(){this.value=digits(this.value).slice(0,2);updatePrice();};
+
+function showPhoto(data){
+  photoData=data;
+  if(data){$("preview").src=data;$("preview").style.display="block";$("removePhoto").classList.remove("hide");}
+  else{$("preview").removeAttribute("src");$("preview").style.display="none";$("removePhoto").classList.add("hide");$("photo").value="";}
+}
+$("photo").onchange=function(){
+  var file=this.files&&this.files[0];
+  if(!file)return;
+  var job=++photoJob;
+  var reader=new FileReader();
+  reader.onerror=function(){toast("Foto gagal dibaca");};
+  reader.onload=function(){
+    var img=new Image();
+    img.onerror=function(){if(job===photoJob){showPhoto("");toast("Format foto tidak didukung. Pakai JPG atau PNG.");}};
+    img.onload=function(){
+      if(job!==photoJob)return;
+      var s=Math.min(1,800/Math.max(img.width,img.height));
+      var c=document.createElement("canvas");
+      c.width=Math.max(1,Math.round(img.width*s));c.height=Math.max(1,Math.round(img.height*s));
+      var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);
+      showPhoto(c.toDataURL("image/jpeg",0.8));
+    };
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+};
+$("removePhoto").onclick=function(){photoJob++;showPhoto("");};
+
+function makeThumb(){
+  if(!photoData||!$("preview").naturalWidth)return photoData.length<20000?photoData:"";
+  var img=$("preview"),s=Math.min(1,160/Math.max(img.naturalWidth,img.naturalHeight));
+  var c=document.createElement("canvas");
+  c.width=Math.max(1,Math.round(img.naturalWidth*s));c.height=Math.max(1,Math.round(img.naturalHeight*s));
+  c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+  return c.toDataURL("image/jpeg",0.7);
+}
+
+function generate(d){
+  var t=TARGETS[d.target],s=STYLES[d.style];
+  var price=Number(digits(d.price)),disc=Number(d.discount||0);
+  var final=rupiah(price*(100-disc)/100);
+  var list=d.benefits.split(/\n|;/).map(function(x){return x.replace(/^[\s\-•*\d.)]+(?=\D)/,"").trim();}).filter(Boolean);
+  var hook=pick(s.hooks).replace("{n}",d.name).replace("{t}",t.sapaan);
+  hook=hook.charAt(0).toUpperCase()+hook.slice(1);
+  var priceLine=disc?"Diskon "+disc+" persen, jadi "+final+".":"Harganya "+final+".";
+  var cta=pick([
+    "Cek keranjang kuning sekarang!",
+    "Klik keranjang kuning untuk lihat produknya!",
+    "Mau? Langsung ketuk keranjang kuning ya!"
+  ]);
+  var used=0;
+  function nextBenefit(){return used<list.length?sentence(list[used++]):"";}
+
+  var time=0;
+  var scenes=PLANS[d.duration].map(function(p,i){
+    var type=p[0],visual,voice,title;
+    if(type==="hook"){title="Hook";visual="Close-up "+d.name+" muncul menarik perhatian di "+t.place+".";voice=hook;}
+    else if(type==="problem"){title="Kebutuhan";visual=t.model+" terlihat sedang mencari solusi di "+t.place+".";voice="Cari yang sesuai kebutuhan harian?";}
+    else if(type==="intro"){title="Perkenalan";visual="Produk diperlihatkan dari depan dan samping dengan jelas.";voice="Kenalin, ini "+d.name+".";}
+    else if(type==="demo"){title="Demonstrasi";visual=t.model+" memegang dan memperagakan "+d.name+" secara wajar.";voice=nextBenefit();if(Number(d.duration)===30)voice+=" "+nextBenefit();}
+    else if(type==="benefit"){title="Manfaat";visual="Detail produk diperbesar, disertai teks singkat manfaat utama.";voice=nextBenefit()||"Lihat detail lengkap produknya.";if(Number(d.duration)===10)voice=d.name+". "+voice;}
+    else{title="CTA";visual="Produk di tengah layar, teks harga "+final+", panah menunjuk ke kiri bawah (area keranjang kuning).";voice=priceLine+" "+cta;}
+    var start=time;time+=p[1];
+    return {no:i+1,title:title,time:start+"-"+time+" detik",visual:visual.charAt(0).toUpperCase()+visual.slice(1),voice:voice.trim()};
+  });
+
+  var sceneText=scenes.map(function(x){return "Adegan "+x.no+" ("+x.time+") - "+x.title+"\nVisual: "+x.visual+"\nSuara: "+x.voice;}).join("\n\n");
+  var voiceText=scenes.map(function(x){return "["+x.time+"] "+x.voice;}).join("\n");
+  var words=scenes.map(function(x){return x.voice;}).join(" ").split(/\s+/).length;
+  var maxWords=Math.round(d.duration*2.5);
+  var note=words>maxWords?"\n\n⚠️ Voice-over "+words+" kata, disarankan maksimal sekitar "+maxWords+" kata. Persingkat manfaat atau pilih durasi lebih panjang.":"";
+  if(list.length>used)note+="\n\nℹ️ Tidak semua manfaat masuk voice-over. Daftar lengkap ada di caption.";
+
+  var photoText=d.hasPhoto
+    ?"Gunakan foto produk yang saya lampirkan sebagai referensi utama. Pertahankan bentuk, warna, logo, dan kemasan persis seperti foto."
+    :"Tampilkan produk secara konsisten di semua adegan, tanpa menambahkan logo atau fitur karangan.";
+
+  var prompt="Buat video promosi vertikal 9:16 berdurasi "+d.duration+" detik untuk produk \""+d.name+"\".\n\n"+
+    "Gaya: "+s.label+" - "+s.look+".\nKamera: "+s.camera+".\nTarget penonton: "+t.label+".\nModel: "+t.model+".\nLokasi: "+t.place+".\nAudio: "+s.audio+", bahasa Indonesia.\n\n"+
+    "Referensi produk: "+photoText+"\n\nSusunan adegan:\n"+sceneText+"\n\n"+
+    "Aturan: kualitas tinggi, anatomi tangan natural, produk tidak berubah bentuk, teks layar singkat dan terbaca, tanpa watermark, tanpa klaim di luar informasi di atas.";
+
+  var caption=hook+"\n\n✨ "+d.name+"\n"+list.map(function(x){return "✅ "+sentence(x);}).join("\n")+"\n\n"+
+    (disc?"🔥 Diskon "+disc+"%\nDari "+rupiah(price)+" jadi "+final:"💰 Harga "+final)+
+    "\n\n🛒 "+cta+"\nHarga dapat berubah sewaktu-waktu.";
+
+  var slug=d.name.split(/[^A-Za-z0-9]+/).filter(Boolean).slice(0,4).map(function(w){return w.charAt(0).toUpperCase()+w.slice(1);}).join("");
+  var tags=[slug?"#"+slug:"",t.tag,s.tag,"#KeranjangKuning","#RekomendasiProduk","#AffiliateIndonesia",disc?"#PromoDiskon":"","#fyp"].filter(Boolean).join(" ");
+
+  return [
+    ["Hook",hook],
+    ["Prompt Video",prompt],
+    ["Adegan",sceneText],
+    ["Voice-over",voiceText+note],
+    ["Caption",caption],
+    ["Hashtag",tags],
+    ["CTA Keranjang Kuning","🛒 "+cta]
+  ];
+}
+
+function fallbackCopy(text){
+  var a=document.createElement("textarea");
+  a.value=text;a.setAttribute("readonly","");
+  a.style.position="fixed";a.style.top="0";a.style.opacity="0";
+  document.body.appendChild(a);a.select();a.setSelectionRange(0,text.length);
+  var ok=false;try{ok=document.execCommand("copy");}catch(e){}
+  document.body.removeChild(a);
+  toast(ok?"Berhasil disalin ✓":"Gagal menyalin. Tekan lama teks untuk menyalin.");
+}
+function copyText(text){
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(text).then(function(){toast("Berhasil disalin ✓");},function(){fallbackCopy(text);});
+  }else fallbackCopy(text);
+}
+
+function el(tag,cls,text){
+  var e=document.createElement(tag);
+  if(cls)e.className=cls;
+  if(text!==undefined)e.textContent=text;
+  return e;
+}
+function button(cls,text,fn){var b=el("button",cls,text);b.type="button";b.onclick=fn;return b;}
+
+function render(sections){
+  var box=$("results");box.textContent="";
+  // Voice-over disalin tanpa catatan peringatan
+  function clean(s){return s[1].split(/\n\n(?:⚠️|ℹ️)/)[0];}
+  box.appendChild(button("main","SALIN SEMUA HASIL",function(){
+    copyText(sections.map(function(s){return "=== "+s[0].toUpperCase()+" ===\n"+clean(s);}).join("\n\n"));
+  }));
+  sections.forEach(function(s){
+    var card=el("div","card"),head=el("div","head");
+    head.appendChild(el("h3","",s[0]));
+    head.appendChild(button("sec","Salin",function(){copyText(clean(s));}));
+    card.appendChild(head);card.appendChild(el("pre","",s[1]));box.appendChild(card);
+  });
+}
+
+function loadHistory(){
+  try{var a=JSON.parse(localStorage.getItem(KEY)||"[]");return Array.isArray(a)?a:[];}catch(e){return [];}
+}
+function saveHistory(a){
+  try{localStorage.setItem(KEY,JSON.stringify(a));return true;}
+  catch(e){
+    try{a.forEach(function(x){x.thumb="";});localStorage.setItem(KEY,JSON.stringify(a));return true;}
+    catch(err){return false;}
+  }
+}
+
+function openItem(item){
+  var d=item.input;
+  photoJob++;
+  ["name","price","discount","benefits","target"].forEach(function(k){$(k).value=d[k];});
+  setChecked("duration",d.duration);setChecked("style",d.style);
+  $("photo").value="";showPhoto(item.thumb||"");
+  updatePrice();$("error").textContent="";
+  render(item.result);showTab(false);
+  $("results").scrollIntoView();
+  if(d.hasPhoto)toast("Riwayat hanya menyimpan foto kecil. Pilih ulang foto jika perlu.");
+}
+
+function renderHistory(){
+  var list=loadHistory(),box=$("historyList");box.textContent="";
+  $("clearAll").classList.toggle("hide",!list.length);
+  if(!list.length){box.appendChild(el("div","card empty","Belum ada riwayat prompt."));return;}
+  list.forEach(function(item){
+    var card=el("div","card"),row=el("div","item"),thumb;
+    if(item.thumb){thumb=el("img","thumb");thumb.src=item.thumb;thumb.alt="";}
+    else thumb=el("div","thumb","🛍️");
+    var info=el("div");
+    info.appendChild(el("b","",item.input.name));
+    info.appendChild(el("small","",STYLES[item.input.style].label+" • "+item.input.duration+" dtk • "+item.date));
+    row.appendChild(thumb);row.appendChild(info);card.appendChild(row);
+    var acts=el("div","acts");
+    acts.appendChild(button("sec","Buka",function(){openItem(item);}));
+    acts.appendChild(button("sec danger","Hapus",function(){
+      ask("Hapus riwayat \""+item.input.name+"\"?",function(){
+        if(saveHistory(loadHistory().filter(function(x){return x.id!==item.id;})))renderHistory();
+        else toast("Riwayat gagal dihapus");
+      });
+    }));
+    card.appendChild(acts);box.appendChild(card);
+  });
+}
+
+function showTab(history){
+  $("pageCreate").classList.toggle("hide",history);
+  $("pageHistory").classList.toggle("hide",!history);
+  $("tabCreate").classList.toggle("on",!history);
+  $("tabHistory").classList.toggle("on",history);
+  if(history)renderHistory();
+}
+$("tabCreate").onclick=function(){showTab(false);};
+$("tabHistory").onclick=function(){showTab(true);};
+$("clearAll").onclick=function(){
+  ask("Hapus semua riwayat?",function(){
+    if(saveHistory([]))renderHistory();else toast("Riwayat gagal dihapus");
+  });
+};
+
+$("form").onsubmit=function(e){
+  e.preventDefault();
+  var d={
+    name:$("name").value.trim().replace(/\s+/g," "),
+    price:$("price").value,
+    discount:$("discount").value||"0",
+    benefits:$("benefits").value.trim(),
+    target:$("target").value,
+    duration:checked("duration"),
+    style:checked("style"),
+    hasPhoto:!!photoData
+  };
+  var error="",field="";
+  if(!d.name){error="Isi nama produk dulu.";field="name";}
+  else if(!Number(digits(d.price))){error="Isi harga lebih dari 0.";field="price";}
+  else if(!d.benefits.replace(/[\s;\-•*]/g,"")){error="Isi minimal satu manfaat produk.";field="benefits";}
+  $("error").textContent=error;
+  if(error){$(field).focus();return;}
+  if(document.activeElement)document.activeElement.blur();
+
+  var result=generate(d);
+  render(result);
+  var history=loadHistory();
+  history.unshift({id:Date.now(),date:new Date().toLocaleDateString("id-ID"),input:d,result:result,thumb:makeThumb()});
+  toast(saveHistory(history.slice(0,MAX_HISTORY))?"Prompt dibuat dan disimpan ✓":"Prompt dibuat, tetapi riwayat tidak bisa disimpan");
+  $("results").scrollIntoView({behavior:"smooth"});
+};
+
+$("reset").onclick=function(){
+  photoJob++;$("form").reset();showPhoto("");
+  $("priceInfo").textContent="";$("error").textContent="";$("results").textContent="";
+  toast("Form dikosongkan");
+};
+})();
+</script>
+</body>
+</html>
